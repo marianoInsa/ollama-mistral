@@ -1,11 +1,7 @@
 FROM ollama/ollama:latest
 
-RUN echo '#!/bin/bash\n\
-ollama serve &\n\
-sleep 10\n\
-ollama pull mistral\n\
-echo "Modelo Mistral descargado. Servidor listo en puerto 11434"\n\
-wait' > /start.sh && chmod +x /start.sh
+ENV OLLAMA_HOST=0.0.0.0:11434
 
 EXPOSE 11434
-CMD ["/start.sh"]
+
+CMD ["sh", "-c", "ollama serve & sleep 15 && ollama pull mistral && wait"]
