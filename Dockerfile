@@ -5,42 +5,45 @@ ENV OLLAMA_MODELS=/app/models
 
 RUN mkdir -p /app/models
 
-RUN cat > /app/entrypoint.sh << 'EOF'
-#!/bin/bash
-echo "=== Iniciando Ollama en Railway ==="
-
-if ! command -v ollama &> /dev/null; then
-    echo "ERROR: Ollama no está instalado o no está en PATH"
-    exit 1
-fi
-
-echo "Iniciando servidor Ollama..."
-ollama serve &
-SERVER_PID=$!
-
-echo "Esperando a que el servidor esté listo..."
-sleep 20
-
-if ! pgrep -f "ollama serve" > /dev/null; then
-    echo "ERROR: El servidor Ollama no se inició correctamente"
-    exit 1
-fi
-
-echo "Descargando modelo Mistral..."
-ollama pull mistral
-
-if [ $? -eq 0 ]; then
-    echo "=== Ollama listo ==="
-    echo "Servidor ejecutándose en puerto 11434"
-    echo "Modelo Mistral descargado correctamente"
-else
-    echo "ERROR: No se pudo descargar el modelo Mistral"
-    exit 1
-fi
-
-# Mantener el contenedor activo
-wait $SERVER_PID
-EOF
+RUN echo '#!/bin/bash\n\
+echo "=== Iniciando Ollama en Railway ==="\n\
+\n\
+# Verificar que ollama esté disponible\n\
+if ! command -v ollama &> /dev/null; then\n\
+    echo "ERROR: Ollama no está instalado o no está en PATH"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Iniciar servidor en background\n\
+echo "Iniciando servidor Ollama..."\n\
+ollama serve &\n\
+SERVER_PID=$!\n\
+\n\
+# Esperar a que el servidor esté listo\n\
+echo "Esperando a que el servidor esté listo..."\n\
+sleep 20\n\
+\n\
+# Verificar que el servidor esté corriendo\n\
+if ! pgrep -f "ollama serve" > /dev/null; then\n\
+    echo "ERROR: El servidor Ollama no se inició correctamente"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Descargar modelo Mistral\n\
+echo "Descargando modelo Mistral..."\n\
+ollama pull mistral\n\
+\n\
+if [ $? -eq 0 ]; then\n\
+    echo "=== Ollama listo ==="\n\
+    echo "Servidor ejecutándose en puerto 11434"\n\
+    echo "Modelo Mistral descargado correctamente"\n\
+else\n\
+    echo "ERROR: No se pudo descargar el modelo Mistral"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Mantener el contenedor activo\n\
+wait $SERVER_PID' > /app/entrypoint.sh
 
 RUN chmod +x /app/entrypoint.sh
 
