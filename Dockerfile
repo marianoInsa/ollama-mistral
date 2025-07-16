@@ -4,4 +4,4 @@ FROM ollama/ollama:latest
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-CMD ["/entrypoint.sh"]
+CMD bash -c "ollama pull mistral && ollama run mistral"
