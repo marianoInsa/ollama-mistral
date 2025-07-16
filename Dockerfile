@@ -1,4 +1,5 @@
 FROM ollama/ollama:latest
 
-CMD ["ollama", "pull", "mistral"]
-CMD ["ollama", "run", "mistral"]
+RUN ollama pull mistral
+
+EXPOSE 11434
